@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#15151f">
+<title>GameHub — Play Free Online Games</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#15151f; --bg2:#1c1c2a; --card:#21212f; --card-h:#2a2a3d;
+    --border:#2e2e42; --txt:#ffffff; --dim:#9b9bb0;
+    --purple:#8b5cf6; --pink:#ec4899; --cyan:#06b6d4; --green:#22c55e;
+  }
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:var(--bg); color:var(--txt); line-height:1.5;
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  }
+  a{color:inherit; text-decoration:none}
+  button{font-family:inherit; cursor:pointer; border:0}
+
+  /* ───── TOP BAR ───── */
+  .topbar{
+    position:sticky; top:0; z-index:100;
+    background:rgba(21,21,31,.94); backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+  }
+  .topbar-inner{
+    max-width:1280px; margin:0 auto; padding:12px 20px;
+    display:flex; align-items:center; gap:20px;
+  }
+  .logo{
+    display:flex; align-items:center; gap:9px; font-size:20px; font-weight:900;
+    letter-spacing:-.5px; flex-shrink:0;
+  }
+  .logo-icon{
+    width:34px; height:34px; border-radius:10px;
+    background:linear-gradient(135deg,var(--purple),var(--pink));
+    display:grid; place-items:center; font-size:17px;
+  }
+  .search-wrap{
+    flex:1; max-width:520px; position:relative;
+  }
+  .search-wrap input{
+    width:100%; padding:11px 16px 11px 42px; border-radius:11px;
+    background:var(--bg2); border:1.5px solid var(--border);
+    color:var(--txt); font-size:14px; font-family:inherit; outline:none;
+    transition:border-color .2s;
+  }
+  .search-wrap input:focus{border-color:var(--purple)}
+  .search-wrap input::placeholder{color:#666680}
+  .search-icon{
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    font-size:15px; opacity:.5; pointer-events:none;
+  }
+  .topbar-actions{display:flex; gap:10px; align-items:center; flex-shrink:0}
+  .icon-btn{
+    width:38px; height:38px; border-radius:10px; background:var(--bg2);
+    border:1px solid var(--border); color:var(--txt); font-size:16px;
+    display:grid; place-items:center; transition:background .2s;
+  }
+  .icon-btn:hover{background:var(--card-h)}
+
+  /* ───── CATEGORY PILLS ───── */
+  .cats{
+    background:var(--bg); border-bottom:1px solid var(--border);
+    position:sticky; top:60px; z-index:99;
+  }
+  .cats-inner{
+    max-width:1280px; margin:0 auto; padding:12px 20px;
+    display:flex; gap:9px; overflow-x:auto; scrollbar-width:none;
+  }
+  .cats-inner::-webkit-scrollbar{display:none}
+  .cat{
+    padding:9px 18px; border-radius:99px; font-size:13.5px; font-weight:700;
+    background:var(--bg2); border:1.5px solid var(--border);
+    color:var(--dim); white-space:nowrap; transition:all .2s;
+  }
+  .cat:hover{color:var(--txt); border-color:#3f3f5a}
+  .cat.active{
+    background:linear-gradient(135deg,var(--purple),var(--pink));
+    border-color:transparent; color:#fff;
+    box-shadow:0 4px 16px rgba(139,92,246,.4);
+  }
+
+  /* ───── MAIN ───── */
+  main{max-width:1280px; margin:0 auto; padding:24px 20px 60px}
+
+  /* ───── FEATURED ───── */
+  .featured{
+    position:relative; border-radius:20px; overflow:hidden; margin-bottom:36px;
+    background:linear-gradient(135deg,#2d1b69,#7c3aed 50%,#db2777);
+    min-height:280px; display:flex; align-items:flex-end;
+    box-shadow:0 20px 50px rgba(139,92,246,.25);
+    cursor:pointer;
+  }
+  .featured::after{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(180deg,transparent 30%,rgba(0,0,0,.7));
+  }
+  .featured-content{
+    position:relative; z-index:2; padding:36px 40px; max-width:580px;
+  }
+  .featured-badge{
+    display:inline-block; padding:5px 13px; border-radius:99px;
+    font-size:11px; font-weight:900; letter-spacing:1.5px; text-transform:uppercase;
+    background:rgba(255,255,255,.2); backdrop-filter:blur(4px); margin-bottom:14px;
+    border:1px solid rgba(255,255,255,.3);
+  }
+  .featured h1{font-size:clamp(28px,5vw,42px); font-weight:900; letter-spacing:-1.5px; line-height:1.05; margin-bottom:10px; text-shadow:0 4px 24px rgba(0,0,0,.4)}
+  .featured p{font-size:15px; opacity:.92; margin-bottom:22px; max-width:440px}
+  .btn-play{
+    padding:13px 32px; border-radius:12px; font-size:15px; font-weight:800;
+    background:#fff; color:#15151f; letter-spacing:.3px;
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+    transition:transform .15s, box-shadow .15s;
+  }
+  .btn-play:hover{transform:translateY(-2px); box-shadow:0 12px 32px rgba(0,0,0,.45)}
+  .featured-emoji{
+    position:absolute; right:40px; top:50%; transform:translateY(-50%);
+    font-size:clamp(80px,14vw,160px); opacity:.85; z-index:1;
+    filter:drop-shadow(0 12px 40px rgba(0,0,0,.45));
+  }
+
+  /* ───── PLAYER ───── */
+  .player-wrap{
+    display:none; margin-bottom:36px; background:var(--card);
+    border:1px solid var(--border); border-radius:20px; overflow:hidden;
+    box-shadow:0 20px 50px rgba(0,0,0,.4);
+  }
+  .player-wrap.show{display:block}
+  .player-head{
+    padding:14px 22px; border-bottom:1px solid var(--border);
+    display:flex; justify-content:space-between; align-items:center;
+    background:rgba(255,255,255,.02);
+  }
+  .player-head h3{font-size:16px; font-weight:800}
+  .close-player{
+    width:32px; height:32px; border-radius:8px; background:var(--bg2);
+    color:var(--txt); font-size:16px; display:grid; place-items:center;
+  }
+  .close-player:hover{background:var(--card-h)}
+  .player-area{
+    position:relative; width:100%; aspect-ratio:16/9; background:#000;
+    display:grid; place-items:center; overflow:hidden;
+  }
+  .player-area > *{width:100%!important; height:100%!important; border:0}
+  .player-placeholder{text-align:center; padding:30px; color:var(--dim)}
+  .player-placeholder .big{font-size:48px; margin-bottom:10px; opacity:.4}
+  .player-placeholder p{font-size:13px; max-width:440px; margin:0 auto; line-height:1.7}
+
+  /* ───── SECTION HEADER ───── */
+  .sec-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:18px; gap:16px;
+  }
+  .sec-head h2{font-size:22px; font-weight:900; letter-spacing:-.5px; display:flex; align-items:center; gap:10px}
+  .sec-head .emoji{font-size:20px}
+  .sec-head a{font-size:13px; font-weight:800; color:var(--purple)}
+
+  /* ───── GAME GRID ───── */
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+    gap:16px; margin-bottom:44px;
+  }
+  .game{
+    position:relative; background:var(--card); border-radius:14px; overflow:hidden;
+    border:1px solid var(--border); cursor:pointer;
+    transition:transform .2s, border-color .2s, box-shadow .2s;
+  }
+  .game:hover{
+    transform:translateY(-4px); border-color:#3f3f5a;
+    box-shadow:0 14px 32px rgba(0,0,0,.4);
+  }
+  .game-thumb{
+    position:relative; aspect-ratio:1/1; display:grid; place-items:center;
+    font-size:52px; overflow:hidden;
+  }
+  .game-thumb::after{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.5));
+  }
+  .game-title{
+    position:absolute; bottom:10px; left:12px; right:12px; z-index:2;
+    font-size:13.5px; font-weight:800; letter-spacing:-.2px;
+    text-shadow:0 2px 8px rgba(0,0,0,.6);
+  }
+  .game-play{
+    position:absolute; inset:0; z-index:3; display:grid; place-items:center;
+    background:rgba(21,21,31,.75); opacity:0; transition:opacity .2s;
+    backdrop-filter:blur(2px);
+  }
+  .game:hover .game-play{opacity:1}
+  .game-play span{
+    padding:10px 24px; border-radius:10px; font-size:12.5px; font-weight:900;
+    letter-spacing:1px; background:linear-gradient(135deg,var(--purple),var(--pink));
+    box-shadow:0 6px 20px rgba(139,92,246,.5);
+  }
+
+  /* ───── FOOTER ───── */
+  footer{
+    border-top:1px solid var(--border); padding:34px 20px 26px;
+    background:var(--bg2);
+  }
+  .footer-inner{
+    max-width:1280px; margin:0 auto; text-align:center;
+    font-size:13px; color:var(--dim);
+  }
+  .footer-inner .logo{justify-content:center; margin-bottom:10px}
+  .footer-links{display:flex; gap:22px; justify-content:center; margin:14px 0; flex-wrap:wrap; font-size:12.5px}
+  .footer-links a{color:var(--dim); transition:color .2s}
+  .footer-links a:hover{color:var(--txt)}
+
+  /* ───── RESPONSIVE ───── */
+  @media (max-width:640px){
+    .topbar-inner{padding:10px 14px; gap:10px}
+    .logo span:last-child{display:none}
+    .search-wrap input{padding:10px 14px 10px 38px; font-size:13px}
+    main{padding:16px 14px 40px}
+    .cats-inner{padding:10px 14px}
+    .featured{min-height:220px; border-radius:16px}
+    .featured-content{padding:24px 22px}
+    .featured-emoji{font-size:90px; right:12px; opacity:.4}
+    .featured p{font-size:13.5px; margin-bottom:16px}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px}
+    .game-thumb{font-size:40px}
+    .game-title{font-size:12px; bottom:8px; left:10px; right:10px}
+    .sec-head h2{font-size:18px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ═════════ TOP BAR ═════════ -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="#" class="logo">
+      <span class="logo-icon">🎮</span>
+      <span>GameHub</span>
+    </a>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Search games..." id="searchInput">
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn" title="Favorites">❤️</button>
+      <button class="icon-btn" title="Random game" onclick="randomGame()">🎲</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════ CATEGORIES ═════════ -->
+<div class="cats">
+  <div class="cats-inner" id="catsRow">
+    <button class="cat active" data-cat="all">🌟 All</button>
+    <button class="cat" data-cat="action">⚔️ Action</button>
+    <button class="cat" data-cat="puzzle">🧩 Puzzle</button>
+    <button class="cat" data-cat="racing">🏎️ Racing</button>
+    <button class="cat" data-cat="sports">🏀 Sports</button>
+    <button class="cat" data-cat="arcade">👾 Arcade</button>
+    <button class="cat" data-cat="retro">🕹️ Retro</button>
+    <button class="cat" data-cat="casual">🎯 Casual</button>
+    <button class="cat" data-cat="2player">👥 2 Player</button>
+  </div>
+</div>
+
+<main>
+
+  <!-- ═════════ FEATURED ═════════ -->
+  <div class="featured" onclick="loadGame('game1')">
+    <div class="featured-emoji">🏀</div>
+    <div class="featured-content">
+      <div class="featured-badge">🔥 Featured Game</div>
+      <h1>Basketball Flick</h1>
+      <p>Swipe to shoot, sink perfect hoops, and beat the clock. Can you become the MVP?</p>
+      <button class="btn-play">▶ Play Now</button>
+    </div>
+  </div>
+
+  <!-- ═════════ PLAYER ═════════ -->
+  <div class="player-wrap" id="playerWrap">
+    <div class="player-head">
+      <h3 id="playerTitle">🎮 Loading...</h3>
+      <button class="close-player" onclick="closePlayer()">✕</button>
+    </div>
+    <div class="player-area" id="playerArea">
+      <!-- Playgama embed yahan load hoga -->
+    </div>
+  </div>
+
+  <!-- ═════════ POPULAR ═════════ -->
+  <div class="sec-head">
+    <h2><span class="emoji">🔥</span> Popular Games</h2>
+    <a href="#" onclick="return false">See All →</a>
+  </div>
+
+  <div class="grid" id="gameGrid">
+
+    <div class="game" data-cat="sports" onclick="loadGame('game1')">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#f97316,#dc2626)">🏀
+        <div class="game-title">Basketball Flick</div>
+        <div class="game-play"><span>▶ PLAY</span></div>
+      </div>
+    </div>
+
+    <div class="game" data-cat="arcade" onclick="loadGame('game2')">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#8b5cf6,#6366f1)">🧱
+        <div class="game-title">Neon Stack</div>
+        <div class="game-play"><span>▶ PLAY</span></div>
+      </div>
+    </div>
+
+    <div class="game" data-cat="racing" onclick="loadGame('game3')">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#06b6d4,#0891b2)">🚗
+        <div class="game-title">Traffic Racer</div>
+        <div class="game-play"><span>▶ PLAY</span></div>
+      </div>
+    </div>
+
+    <div class="game" data-cat="puzzle" onclick="loadGame('game4')">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#eab308,#f97316)">🧩
+        <div class="game-title">Puzzle Blast</div>
+        <div class="game-play"><span>▶ PLAY</span></div>
+      </div>
+    </div>
+
+    <div class="game" data-cat="action" onclick="loadGame('game5')">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#ec4899,#db2777)">👾
+        <div class="game-title">Space Shooter</div>
+        <div class="game-play"><span>▶ PLAY</span></div>
+      </div>
+    </div>
+
+    <div class="game" data-cat="retro" onclick="loadGame('game6')">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#22c55e,#16a34a)">🐍
+        <div class="game-title">Snake Classic</div>
+        <div class="game-play"><span>▶ PLAY</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═════════ NEW GAMES ═════════ -->
+  <div class="sec-head">
+    <h2><span class="emoji">✨</span> New Games</h2>
+    <a href="#" onclick="return false">See All →</a>
+  </div>
+
+  <div class="grid" id="newGrid">
+    <!-- Yahan naye games add karein — same structure -->
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="logo"><span class="logo-icon">🎮</span><span>GameHub</span></div>
+    <div>Play free online games. No downloads. No sign-ups.</div>
+    <div class="footer-links">
+      <a href="#">About</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Contact</a>
+    </div>
+    <div style="margin-top:14px; font-size:12px; opacity:.7">© <span id="year"></span> GameHub — All rights reserved</div>
+  </div>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   📌 PLAYGAMA EMBED CODES
+   ───────────────────────────────────────────────────────────────
+   Har game ke "html" mein apna Playgama embed code paste karein.
+   Format: <iframe src="https://playgama.com/export/game/XXX?clid=YOUR_CLID" ...></iframe>
+   ═══════════════════════════════════════════════════════════════ */
+const games = {
+  game1: { title:'🏀 Basketball Flick', html:`<div class="player-placeholder"><div class="big">🏀</div><p>Playgama embed code yahan paste karein — <code>game1.html</code></p></div>` },
+  game2: { title:'🧱 Neon Stack',       html:`<div class="player-placeholder"><div class="big">🧱</div><p>Playgama embed code yahan paste karein — <code>game2.html</code></p></div>` },
+  game3: { title:'🚗 Traffic Racer',    html:`<div class="player-placeholder"><div class="big">🚗</div><p>Playgama embed code yahan paste karein — <code>game3.html</code></p></div>` },
+  game4: { title:'🧩 Puzzle Blast',     html:`<div class="player-placeholder"><div class="big">🧩</div><p>Playgama embed code yahan paste karein — <code>game4.html</code></p></div>` },
+  game5: { title:'👾 Space Shooter',    html:`<div class="player-placeholder"><div class="big">👾</div><p>Playgama embed code yahan paste karein — <code>game5.html</code></p></div>` },
+  game6: { title:'🐍 Snake Classic',    html:`<div class="player-placeholder"><div class="big">🐍</div><p>Playgama embed code yahan paste karein — <code>game6.html</code></p></div>` }
+};
+
+function loadGame(id){
+  const g = games[id];
+  if(!g) return;
+  document.getElementById('playerTitle').textContent = g.title;
+  document.getElementById('playerArea').innerHTML = g.html;
+  const wrap = document.getElementById('playerWrap');
+  wrap.classList.add('show');
+  setTimeout(() => wrap.scrollIntoView({behavior:'smooth', block:'start'}), 100);
+}
+function closePlayer(){
+  document.getElementById('playerWrap').classList.remove('show');
+  document.getElementById('playerArea').innerHTML = '';
+}
+function randomGame(){
+  const keys = Object.keys(games);
+  loadGame(keys[Math.floor(Math.random()*keys.length)]);
+}
+
+/* Category filter */
+document.querySelectorAll('.cat').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.cat').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cat = btn.dataset.cat;
+    document.querySelectorAll('#gameGrid .game').forEach(g => {
+      g.style.display = (cat === 'all' || g.dataset.cat === cat) ? '' : 'none';
+    });
+  });
+});
+
+/* Search */
+document.getElementById('searchInput').addEventListener('input', function(e){
+  const q = e.target.value.toLowerCase().trim();
+  document.querySelectorAll('#gameGrid .game').forEach(g => {
+    const t = g.querySelector('.game-title').textContent.toLowerCase();
+    g.style.display = t.includes(q) ? '' : 'none';
+  });
+});
+
+document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
